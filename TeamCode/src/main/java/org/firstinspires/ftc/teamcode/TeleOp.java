@@ -2,34 +2,60 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="Main TeleOp", group="Main")
 public class TeleOp extends OpMode {
     // Declare OpMode members.
-    private ElapsedTime runtime = null;
+    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor driveFrontLeft  = null;
     private DcMotor driveBackLeft = null;
     private DcMotor driveFrontRight = null;
     private DcMotor driveBackRight  = null;
 
+    private Servo intake = null;
 
+    private DcMotor armLeft = null;
+    private DcMotor armRight = null;
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
         // init hardware variables.
-        runtime = new ElapsedTime();
-        driveFrontLeft  = hardwareMap.get(DcMotor.class, "leftFrontDrive");
-        driveBackLeft  = hardwareMap.get(DcMotor.class, "leftBackDrive");
-        driveFrontRight = hardwareMap.get(DcMotor.class, "rightFrontDrive");
-        driveBackRight = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        driveFrontLeft  = hardwareMap.get(DcMotor.class, "driveFrontLeft");
+        driveBackLeft   = hardwareMap.get(DcMotor.class, "driveBackLeft");
+        driveFrontRight = hardwareMap.get(DcMotor.class, "driveFrontRight");
+        driveBackRight  = hardwareMap.get(DcMotor.class, "driveBackRight");
+//        intake = hardwareMap.get(Servo.class, "intake");
+//        armLeft = hardwareMap.get(DcMotor.class, "armLeft");
+//        armRight = hardwareMap.get(DcMotor.class, "armRight");
 
+        /**
+         * Set up Drive Motors
+         */
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
         driveBackRight.setDirection(DcMotor.Direction.REVERSE);
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
+
+        /**
+         * Set up Arm Motors
+         */
+//        armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        armLeft.setTargetPosition(0);
+//        armLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        armLeft.setPower(1.0);
+//        armLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        armRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        armRight.setTargetPosition(0);
+//        armRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        armRight.setPower(1.0);
+//        armRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
 
         // telemetry
         telemetry.addData("Status", "Initialized");
@@ -40,6 +66,8 @@ public class TeleOp extends OpMode {
      */
     @Override
     public void init_loop() {
+//        telemetry.addData("Left Arm Position", armLeft.getCurrentPosition());
+//        telemetry.addData("Right Arm Position", armRight.getCurrentPosition());
     }
 
     /*
@@ -58,8 +86,7 @@ public class TeleOp extends OpMode {
         // move robot
         drive();
 
-
-        // move arm
+        // move arm & intake
 
 
         // telemetry
@@ -75,6 +102,9 @@ public class TeleOp extends OpMode {
         driveBackLeft.setPower(0);
         driveFrontRight.setPower(0);
         driveBackRight.setPower(0);
+
+//        armLeft.setTargetPosition(0);
+//        armRight.setTargetPosition(0);
     }
 
     private void drive() {
