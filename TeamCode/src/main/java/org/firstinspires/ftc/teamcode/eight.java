@@ -21,8 +21,8 @@ public class eight extends OpMode {
     private DcMotor armLeft;
     private DcMotor armRight;
 
-    private int armPosition;
-    private int servoPos;
+    private int leftArmPos, rightArmPos;
+    private double servoPos;
 
     private final int[] armPositions = { 0, 190, 250, 440 };
     /*
@@ -39,7 +39,7 @@ public class eight extends OpMode {
         armLeft = hardwareMap.get(DcMotor.class, "armLeft");
         armRight = hardwareMap.get(DcMotor.class, "armRight");
 
-        /**
+        /*
          * Set up Drive Motors
          */
         driveFrontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -47,10 +47,12 @@ public class eight extends OpMode {
         driveFrontLeft.setDirection(DcMotor.Direction.FORWARD);
         driveBackLeft.setDirection(DcMotor.Direction.FORWARD);
 
-        /**
+        /*
          * Set up Arm Motors
          */
-        armPosition = 0;
+
+        // directions should be good?
+        leftArmPos = rightArmPos = 0;
 
         armLeft.setDirection(DcMotor.Direction.FORWARD);
         armLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -60,10 +62,13 @@ public class eight extends OpMode {
         armRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        /**
+        /*
          * Set up Intake Servo
          */
+
+        // i'm not gonna lie, i have no idea what to do here
         servoPos = 0;
+        intake.setDirection(Servo.Direction.FORWARD);
 
 
         // telemetry
@@ -109,7 +114,6 @@ public class eight extends OpMode {
 
         // telemetry
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-//        telemetry.addData("Right stick", "" + gamepad1.right_stick_y);
         telemetry.addData("Left Arm Position", armLeft.getCurrentPosition());
         telemetry.addData("Right Arm Position", armRight.getCurrentPosition());
         telemetry.addData("Servo Position", intake.getPosition());
@@ -147,46 +151,44 @@ public class eight extends OpMode {
     }
 
     private void lift() {
+        int step = 10;
         if (gamepad1.a) {
-//            armLeft.setTargetPosition(armPositions[0]);
-//            armRight.setTargetPosition(armPositions[0]);
-            armPosition = armPositions[0];
+            leftArmPos = rightArmPos = armPositions[0];
         }
         else if (gamepad1.b) {
-//            armLeft.setTargetPosition(armPositions[1]);
-//            armRight.setTargetPosition(armPositions[1]);
-            armPosition = armPositions[1];
+            leftArmPos = rightArmPos = armPositions[1];
         }
         else if (gamepad1.x) {
-//            armLeft.setTargetPosition(armPositions[2]);
-//            armRight.setTargetPosition(armPositions[2]);
-            armPosition = armPositions[2];
+            leftArmPos = rightArmPos = armPositions[2];
         }
         else if (gamepad1.y) {
-//            armLeft.setTargetPosition(armPositions[3]);
-//            armRight.setTargetPosition(armPositions[3]);
-            armPosition = armPositions[3];
+            leftArmPos = rightArmPos = armPositions[3];
         }
-        else if (gamepad1.left_trigger > 0.5) {
-            armPosition -= 5;
+        else if (gamepad1.left_trigger > 0.2) {
+            leftArmPos = armLeft.getCurrentPosition() - step;
+            rightArmPos = armRight.getCurrentPosition() - step;
         }
-        else if (gamepad1.right_trigger > 0.5) {
-            armPosition += 5;
+        else if (gamepad1.right_trigger > 0.2) {
+            leftArmPos = armLeft.getCurrentPosition() + step;
+            rightArmPos = armRight.getCurrentPosition() + step;
+
         }
 
-        armLeft.setTargetPosition(armPosition);
-        armRight.setTargetPosition(armPosition);
+        armLeft.setTargetPosition(Range.clip(leftArmPos, 0, 441));
+        armRight.setTargetPosition(Range.clip(rightArmPos, 0, 441));
     }
 
     private void intake() {
+        double step = .1;
+
         if (gamepad1.left_bumper) {
-            servoPos -= .05;
+            servoPos -= step;
         }
         else if (gamepad1.right_bumper) {
-            servoPos += .05;
+            servoPos += step;
         }
-        servoPos = Range.clip(servoPos, -1, 1);
 
+        servoPos = Range.clip(servoPos, 0, 1);
         intake.setPosition(servoPos);
     }
 }
